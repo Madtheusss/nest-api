@@ -5,31 +5,23 @@ import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
-import { join } from 'path'
+import { join } from 'path';
 import { UserModule } from './user/user.module';
-
 
 @Module({
   imports: [
-    ConfigModule.forRoot(),
+    ConfigModule.forRoot(), // Carrega as variáveis de ambiente do .env
     TypeOrmModule.forRoot({
-      type: process.env.DB_TYPE as any,
-      host: process.env.DB_HOST,
-      port: parseInt(process.env.DB_PORT, 10),
-      username: process.env.DB_USERNAME,
-      password: process.env.DB_PASSWORD,
-      database: process.env.DB_DATABASE,
-      entities: [
-        __dirname + '/**/*.entity{.ts,.js}',
-      ],
-      synchronize: true,
-      autoLoadEntities: true
+      type: process.env.DB_TYPE as any, // Usa o tipo do banco de dados do .env
+      database: process.env.DB_DATABASE, // Usa o nome do banco do .env
+      entities: [__dirname + '/**/*.entity{.ts,.js}'], // Autoload entities
+      synchronize: true, // Cria as tabelas automaticamente (cuidado em produção!)
     }),
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
     }),
-    UserModule
+    UserModule,
   ],
   controllers: [AppController],
   providers: [AppService],
